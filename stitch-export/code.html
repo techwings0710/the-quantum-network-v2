@@ -1,0 +1,520 @@
+<!DOCTYPE html>
+
+<html class="dark" lang="en"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>The Quantum Network | Leading Quantum Ecosystem News</title>
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&amp;family=JetBrains+Mono:wght@400;500&amp;family=Geist:wght@400;500;600;700;800&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<script id="tailwind-config">
+      tailwind.config = {
+        darkMode: "class",
+        theme: {
+          extend: {
+            "colors": {
+                    "surface-container-lowest": "#080e18",
+                    "surface-container-high": "#242a35",
+                    "primary-fixed": "#d8e2ff",
+                    "on-secondary-fixed-variant": "#5516be",
+                    "secondary-fixed": "#e9ddff",
+                    "on-error-container": "#ffdad6",
+                    "surface": "#0e131e",
+                    "on-surface": "#dde2f1",
+                    "surface-container-low": "#161c26",
+                    "surface-variant": "#2f3540",
+                    "on-primary-fixed-variant": "#004395",
+                    "secondary-container": "#571bc1",
+                    "tertiary-fixed-dim": "#89ceff",
+                    "on-background": "#dde2f1",
+                    "secondary-fixed-dim": "#d0bcff",
+                    "on-surface-variant": "#c2c6d6",
+                    "surface-dim": "#0e131e",
+                    "on-secondary-container": "#c4abff",
+                    "on-secondary": "#3c0091",
+                    "tertiary-fixed": "#c9e6ff",
+                    "surface-container": "#1a202a",
+                    "on-tertiary-fixed-variant": "#004c6e",
+                    "inverse-primary": "#005ac2",
+                    "outline-variant": "#424754",
+                    "on-primary": "#002e6a",
+                    "inverse-surface": "#dde2f1",
+                    "primary-container": "#4d8eff",
+                    "tertiary": "#89ceff",
+                    "on-secondary-fixed": "#23005c",
+                    "inverse-on-surface": "#2b313c",
+                    "surface-bright": "#343945",
+                    "surface-tint": "#adc6ff",
+                    "primary": "#adc6ff",
+                    "on-tertiary": "#00344d",
+                    "primary-fixed-dim": "#adc6ff",
+                    "background": "#0e131e",
+                    "surface-container-highest": "#2f3540",
+                    "on-tertiary-container": "#002d43",
+                    "error": "#ffb4ab",
+                    "error-container": "#93000a",
+                    "secondary": "#d0bcff",
+                    "on-primary-fixed": "#001a42",
+                    "on-primary-container": "#00285d",
+                    "tertiary-container": "#009ada",
+                    "on-error": "#690005",
+                    "outline": "#8c909f",
+                    "on-tertiary-fixed": "#001e2f"
+            },
+            "borderRadius": {
+                    "DEFAULT": "0.25rem",
+                    "lg": "0.5rem",
+                    "xl": "0.75rem",
+                    "full": "9999px"
+            },
+            "spacing": {
+                    "xs": "4px",
+                    "lg": "48px",
+                    "xl": "80px",
+                    "sm": "12px",
+                    "margin-mobile": "16px",
+                    "gutter": "24px",
+                    "base": "8px",
+                    "md": "24px",
+                    "container-max": "1440px"
+            },
+            "fontFamily": {
+                    "headline-md": ["Geist"],
+                    "headline-lg": ["Geist"],
+                    "body-md": ["Inter"],
+                    "body-lg": ["Inter"],
+                    "label-sm": ["JetBrains Mono"],
+                    "label-md": ["JetBrains Mono"],
+                    "display-lg": ["Geist"],
+                    "headline-lg-mobile": ["Geist"]
+            },
+            "fontSize": {
+                    "headline-md": ["24px", {"lineHeight": "1.4", "fontWeight": "500"}],
+                    "headline-lg": ["40px", {"lineHeight": "1.2", "letterSpacing": "-0.02em", "fontWeight": "600"}],
+                    "body-md": ["16px", {"lineHeight": "1.6", "fontWeight": "400"}],
+                    "body-lg": ["18px", {"lineHeight": "1.6", "fontWeight": "400"}],
+                    "label-sm": ["12px", {"lineHeight": "1.4", "letterSpacing": "0.1em", "fontWeight": "500"}],
+                    "label-md": ["14px", {"lineHeight": "1.4", "letterSpacing": "0.05em", "fontWeight": "500"}],
+                    "display-lg": ["64px", {"lineHeight": "1.1", "letterSpacing": "-0.04em", "fontWeight": "700"}],
+                    "headline-lg-mobile": ["32px", {"lineHeight": "1.2", "fontWeight": "600"}]
+            }
+          },
+        },
+      }
+    </script>
+<style>
+        .glass-card {
+            background: rgba(22, 28, 38, 0.6);
+            backdrop-filter: blur(20px);
+            border: 0.5px solid rgba(255, 255, 255, 0.1);
+            position: relative;
+            overflow: hidden;
+        }
+        .glass-card::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            height: 1px;
+            background: linear-gradient(90deg, rgba(255,255,255,0.15) 0%, rgba(255,255,255,0) 100%);
+        }
+        .hover-glow:hover {
+            box-shadow: 0 0 32px rgba(173, 198, 255, 0.12);
+        }
+        .shimmer {
+            background: linear-gradient(90deg, rgba(255,255,255,0) 0%, rgba(255,255,255,0.05) 50%, rgba(255,255,255,0) 100%);
+            background-size: 200% 100%;
+            animation: shimmer 3s infinite;
+        }
+        @keyframes shimmer {
+            0% { background-position: -200% 0; }
+            100% { background-position: 200% 0; }
+        }
+        .status-pulse {
+            width: 8px;
+            height: 8px;
+            background-color: #adc6ff;
+            border-radius: 50%;
+            box-shadow: 0 0 0 rgba(173, 198, 255, 0.4);
+            animation: pulse 2s infinite;
+        }
+        @keyframes pulse {
+            0% { transform: scale(0.95); box-shadow: 0 0 0 0 rgba(173, 198, 255, 0.7); }
+            70% { transform: scale(1); box-shadow: 0 0 0 10px rgba(173, 198, 255, 0); }
+            100% { transform: scale(0.95); box-shadow: 0 0 0 0 rgba(173, 198, 255, 0); }
+        }
+        ::-webkit-scrollbar { width: 6px; }
+        ::-webkit-scrollbar-track { background: #0e131e; }
+        ::-webkit-scrollbar-thumb { background: #2f3540; border-radius: 3px; }
+        ::-webkit-scrollbar-thumb:hover { background: #424754; }
+    </style>
+</head>
+<body class="bg-background text-on-surface font-body-md selection:bg-primary/30">
+<!-- TopNavBar -->
+<header class="fixed top-0 w-full z-50 bg-surface/80 backdrop-blur-xl border-b border-white/10 shadow-sm">
+<nav class="max-w-container-max mx-auto px-md h-16 flex items-center justify-between">
+<div class="flex items-center gap-md">
+<span class="font-headline-md text-headline-md font-bold tracking-tight text-on-surface">The Quantum Network</span>
+<div class="hidden md:flex gap-md ml-lg">
+<a class="font-body-md text-body-md text-primary border-b-2 border-primary pb-1" href="#">News</a>
+<a class="font-body-md text-body-md text-on-surface-variant hover:text-on-surface transition-colors" href="#">Research</a>
+<a class="font-body-md text-body-md text-on-surface-variant hover:text-on-surface transition-colors" href="#">Opportunities</a>
+<a class="font-body-md text-body-md text-on-surface-variant hover:text-on-surface transition-colors" href="#">Events</a>
+<a class="font-body-md text-body-md text-on-surface-variant hover:text-on-surface transition-colors" href="#">Community</a>
+</div>
+</div>
+<div class="flex items-center gap-md">
+<div class="hidden lg:block relative">
+<span class="material-symbols-outlined absolute left-3 top-1/2 -translate-y-1/2 text-on-surface-variant text-sm">search</span>
+<input class="bg-surface-container-low border-none rounded-full pl-10 pr-4 py-1.5 text-sm focus:ring-1 focus:ring-primary w-48 transition-all duration-300" placeholder="Search insights..." type="text"/>
+</div>
+<button class="bg-primary text-on-primary px-5 py-2 rounded-full font-label-md hover:opacity-80 transition-opacity active:scale-95 duration-200">
+                    Sign In
+                </button>
+</div>
+</nav>
+</header>
+<main class="mt-16 pt-xl px-md max-w-container-max mx-auto space-y-xl">
+<!-- Hero News Section (Bento) -->
+<section class="grid grid-cols-1 lg:grid-cols-12 gap-gutter min-h-[600px]">
+<!-- Featured Story -->
+<div class="lg:col-span-8 relative group cursor-pointer glass-card rounded-xl overflow-hidden flex flex-col justify-end p-xl">
+<div class="absolute inset-0 z-0">
+<div class="w-full h-full bg-cover bg-center transition-transform duration-700 group-hover:scale-105" data-alt="A professional high-tech laboratory scene in India featuring advanced optical tables and laser systems. The lighting is deep navy and cyan with a sharp focus on metallic quantum components. Scientists in white lab coats are blurred in the background of a vast, futuristic research facility. The overall mood is sophisticated, pioneering, and deeply institutional." style="background-image: url('https://lh3.googleusercontent.com/aida-public/AB6AXuBfwZXzB3EPp5v8w2NjzWL5tTNXByboq-LapFkyyw3_FvrFS69HrCKTwKo2CRV7Tqod1VK5TUCmFK0Y-Tx05RwfHGjr4NIAxBlvCfhjY0X342GJ5lT_JyReoN7Wha6ZKvjB4dVVogbyI7VgiVxi7efXnaPqZT7O7QPQgwx7vqS7nO6CRPCrjfDzwdHMadsGXs9oMgTuufCizo7HC8niFa1ubdFSZito-Z33symz2RRgmCCeQyzHDzyoHwHgVwj77uWJ5JUlu6qo_QA')">
+</div>
+<div class="absolute inset-0 bg-gradient-to-t from-background via-background/40 to-transparent"></div>
+</div>
+<div class="relative z-10 space-y-md">
+<div class="flex items-center gap-sm">
+<span class="font-label-sm text-label-sm bg-primary-container text-on-primary-container px-3 py-1 rounded-full">MISSION UPDATE</span>
+<div class="status-pulse"></div>
+</div>
+<h1 class="font-headline-lg text-headline-lg text-white leading-tight">India's National Quantum Mission Reaches Major Milestone</h1>
+<p class="text-on-surface-variant font-body-lg max-w-2xl">The Department of Science and Technology reports a breakthrough in domestic qubit development, signaling a significant leap for the country's $750M quantum initiative.</p>
+</div>
+</div>
+<!-- Secondary Stories -->
+<div class="lg:col-span-4 grid grid-cols-1 gap-gutter">
+<div class="glass-card rounded-xl p-md flex flex-col justify-between hover-glow transition-all group cursor-pointer">
+<span class="font-label-sm text-label-sm text-primary mb-base">HARDWARE</span>
+<h3 class="font-headline-md text-headline-md text-on-surface group-hover:text-primary transition-colors">QpiAI Unveils New Quantum Processor Unit</h3>
+<p class="text-on-surface-variant text-sm mt-xs">A new 25-qubit hybrid AI-quantum processor designed for enterprise logistics optimization.</p>
+</div>
+<div class="glass-card rounded-xl p-md flex flex-col justify-between hover-glow transition-all group cursor-pointer">
+<span class="font-label-sm text-label-sm text-primary mb-base">ECOSYSTEM</span>
+<h3 class="font-headline-md text-headline-md text-on-surface group-hover:text-primary transition-colors">IIT Madras Announces Quantum Research Center</h3>
+<p class="text-on-surface-variant text-sm mt-xs">A state-of-the-art facility focused on post-quantum cryptography and material science.</p>
+</div>
+<div class="glass-card rounded-xl p-md flex flex-col justify-between hover-glow transition-all group cursor-pointer">
+<span class="font-label-sm text-label-sm text-primary mb-base">VENTURE</span>
+<h3 class="font-headline-md text-headline-md text-on-surface group-hover:text-primary transition-colors">Global Funding Surges for Early-Stage Startups</h3>
+<p class="text-on-surface-variant text-sm mt-xs">Over $2.4B invested in Q1 2024, focusing on error-correction and room-temp systems.</p>
+</div>
+</div>
+</section>
+<!-- Latest Quantum News -->
+<section class="space-y-md">
+<div class="flex items-end justify-between border-b border-white/5 pb-sm">
+<h2 class="font-headline-lg text-headline-lg">Latest Quantum News</h2>
+<a class="text-primary font-label-md flex items-center gap-xs hover:gap-sm transition-all" href="#">VIEW ALL <span class="material-symbols-outlined text-sm">arrow_forward</span></a>
+</div>
+<div class="grid grid-cols-1 md:grid-cols-3 gap-gutter">
+<!-- Article 1 -->
+<div class="group cursor-pointer space-y-sm">
+<div class="aspect-video rounded-xl overflow-hidden glass-card">
+<div class="w-full h-full bg-cover bg-center transition-transform duration-500 group-hover:scale-110" data-alt="A macro view of a superconducting quantum circuit on a silicon wafer. The chip is intricately designed with gold wiring and Josephson junctions, illuminated by a cool blue bioluminescent glow against a dark matte background. The aesthetic is clean, technical, and high-fidelity, resembling modern semiconductor photography." style="background-image: url('https://lh3.googleusercontent.com/aida-public/AB6AXuBAk5nQAEf4GclwdCIBHqymKr6km9oAak4h2hvuO0EVUi5e9OgRE-_LaG35xXpCJXsUbYxWrttcZ29TdENxEaitMNT_vVFxinHgwj-FUrRVPtKkrIb-TKvv4b3HdyuZEOuDag_uo97cAPUFBvOgH2x91YiXDkqE62LYoBW6Hh994aq0quq8p0U4MQHg796C-D-t7uy9xYs1A-Sk0lziyeHIJbKE0_EKIv1A-3aC0-YSkB_Xu7hUMwdm8YRhgf2iSgxRutgZp6RZ7ZY')"></div>
+</div>
+<div class="flex items-center gap-sm">
+<span class="font-label-sm text-label-sm text-tertiary">RESEARCH</span>
+<span class="text-on-surface-variant text-xs">• May 24, 2024</span>
+</div>
+<h3 class="font-headline-md text-headline-md leading-snug group-hover:text-primary transition-colors">Breakthrough in Qubit Coherence Times Reported</h3>
+<p class="text-on-surface-variant text-sm line-clamp-3">Researchers at ETH Zurich demonstrate a new error-correction method that extends coherence by 400%, pushing the boundaries of stable computation.</p>
+</div>
+<!-- Article 2 -->
+<div class="group cursor-pointer space-y-sm">
+<div class="aspect-video rounded-xl overflow-hidden glass-card">
+<div class="w-full h-full bg-cover bg-center transition-transform duration-500 group-hover:scale-110" data-alt="A futuristic server room featuring racks of cryostats and liquid helium cooling systems. The room is glowing with soft purple and indigo neon lights reflecting off polished dark floors. Fine white laser lines trace patterns through the air, suggesting data transmission. The style is cinematic and high-end industrial tech." style="background-image: url('https://lh3.googleusercontent.com/aida-public/AB6AXuC_wI4SuJMnbGvvXcuMjxjGgyNVKIF0bTgiQgz8_NpG1PokksN4G2FPsVrp0zBvIWrScLXzqNV5tHZ-gdIbYdTrDqObGAZxdKapdAJ3VjMlaaapDKoQO6PBL5IwHY5-uC38FSnk0rzYO8fUpwz3adN_eI_goiqfm7Z37XVGNVQK9ySH0_5QVQ3-JAamvQpTGx7V8ephh_xl3b63-e3lSYCcCTh8VLFAfLroBY_t6mD8pp0G1hWG7abL9yFEEe1h3M_d2qfaY3chMsg')"></div>
+</div>
+<div class="flex items-center gap-sm">
+<span class="font-label-sm text-label-sm text-tertiary">ENTERPRISE</span>
+<span class="text-on-surface-variant text-xs">• May 22, 2024</span>
+</div>
+<h3 class="font-headline-md text-headline-md leading-snug group-hover:text-primary transition-colors">Cloud Quantum Platforms Expand Global Footprint</h3>
+<p class="text-on-surface-variant text-sm line-clamp-3">Major cloud providers announce the rollout of next-gen QPU access for enterprise clients in Southeast Asia and the Middle East.</p>
+</div>
+<!-- Article 3 -->
+<div class="group cursor-pointer space-y-sm">
+<div class="aspect-video rounded-xl overflow-hidden glass-card">
+<div class="w-full h-full bg-cover bg-center transition-transform duration-500 group-hover:scale-110" data-alt="A high-concept digital visualization of quantum algorithms interacting. Neon blue wireframes of spheres and interlocking nodes flow across a deep black digital space. Soft light particles drift like embers, creating a sense of depth and computational complexity. The aesthetic is inspired by premium data visualization software." style="background-image: url('https://lh3.googleusercontent.com/aida-public/AB6AXuCVVB-j4Q4yoRkLr2W4lHx9EiKy7BsCEDZatJfgAJZ_YU7DFxhIym3rYyicFNFdYYskW09Lnvr7WMwZuY39cSx1IK-jN9J2xZFpQOkF0fYDtMK-p6nbNjf6oOuzQjsqkkG6eEgfHdVW5tkM1MuyQzRLUjO7xNCB99FipMAlVVOk4FLQHQpkgaVSHqf8MVjkpY6oVGlWa5NPUbe6r390dY7JHEyrajpaFnL3SHNFl0bG4TL5oAHgDPOwb8XJMNFeDr1dTg2eoApueRU')"></div>
+</div>
+<div class="flex items-center gap-sm">
+<span class="font-label-sm text-label-sm text-tertiary">SOFTWARE</span>
+<span class="text-on-surface-variant text-xs">• May 20, 2024</span>
+</div>
+<h3 class="font-headline-md text-headline-md leading-snug group-hover:text-primary transition-colors">Open-Source Quantum Libraries Get Performance Boost</h3>
+<p class="text-on-surface-variant text-sm line-clamp-3">The latest update to major quantum SDKs introduces automated circuit optimization, reducing noise overhead in NISQ-era devices.</p>
+</div>
+</div>
+</section>
+<!-- India Quantum Pulse -->
+<section class="bg-surface-container-low rounded-3xl p-lg relative overflow-hidden">
+<div class="absolute top-0 right-0 w-1/2 h-full opacity-10">
+
+</div>
+<div class="relative z-10 space-y-lg">
+<div class="flex flex-col md:flex-row md:items-center gap-md">
+<h2 class="font-headline-lg text-headline-lg">India Quantum Pulse</h2>
+<div class="h-px bg-white/10 flex-grow hidden md:block"></div>
+<span class="font-label-md text-on-surface-variant px-4 py-2 border border-white/5 rounded-full glass-card">Ecosystem Tracking</span>
+</div>
+<div class="grid grid-cols-1 md:grid-cols-4 gap-gutter">
+<div class="glass-card p-md rounded-2xl hover:bg-surface-container transition-colors cursor-pointer">
+<div class="text-primary mb-md"><span class="material-symbols-outlined text-3xl">account_balance</span></div>
+<h4 class="font-headline-md text-on-surface mb-xs">National Mission</h4>
+<p class="text-on-surface-variant text-sm">₹6,003 Crore allocated for research hubs and pilot projects across 4 domains.</p>
+</div>
+<div class="glass-card p-md rounded-2xl hover:bg-surface-container transition-colors cursor-pointer">
+<div class="text-primary mb-md"><span class="material-symbols-outlined text-3xl">psychology</span></div>
+<h4 class="font-headline-md text-on-surface mb-xs">IndiaAI Initative</h4>
+<p class="text-on-surface-variant text-sm">Strategic framework to integrate quantum computing with large-scale AI datasets.</p>
+</div>
+<div class="glass-card p-md rounded-2xl hover:bg-surface-container transition-colors cursor-pointer">
+<div class="text-primary mb-md"><span class="material-symbols-outlined text-3xl">security</span></div>
+<h4 class="font-headline-md text-on-surface mb-xs">QNu Labs</h4>
+<p class="text-on-surface-variant text-sm">Bangalore-based firm leading the commercialization of QKD solutions for defense.</p>
+</div>
+<div class="glass-card p-md rounded-2xl hover:bg-surface-container transition-colors cursor-pointer">
+<div class="text-primary mb-md"><span class="material-symbols-outlined text-3xl">school</span></div>
+<h4 class="font-headline-md text-on-surface mb-xs">IISc Research</h4>
+<p class="text-on-surface-variant text-sm">Pioneering work in photonic quantum communication and topological insulators.</p>
+</div>
+</div>
+</div>
+</section>
+<!-- Research & Startup Split -->
+<div class="grid grid-cols-1 lg:grid-cols-2 gap-xl">
+<!-- Research Highlights -->
+<section class="space-y-md">
+<div class="flex items-center justify-between border-b border-white/5 pb-sm">
+<h2 class="font-headline-md text-headline-md">Research Highlights</h2>
+<span class="font-label-sm text-on-surface-variant">PEER-REVIEWED</span>
+</div>
+<div class="space-y-gutter">
+<div class="group border-l-2 border-primary/20 hover:border-primary pl-md transition-all cursor-pointer">
+<p class="text-primary font-label-sm mb-xs">Nature Quantum Information</p>
+<h4 class="font-headline-md text-on-surface group-hover:text-primary transition-colors">Universal Quantum Gates on Topological Qubits</h4>
+<p class="text-on-surface-variant text-sm mt-xs">Dr. A. Sharma, et al. | Published May 2024</p>
+</div>
+<div class="group border-l-2 border-primary/20 hover:border-primary pl-md transition-all cursor-pointer">
+<p class="text-primary font-label-sm mb-xs">arXiv:2405.0812</p>
+<h4 class="font-headline-md text-on-surface group-hover:text-primary transition-colors">Optimizing Cryogenic Control Electronics for Scaling</h4>
+<p class="text-on-surface-variant text-sm mt-xs">Prof. L. Chen, et al. | 14-page Technical Paper</p>
+</div>
+<div class="group border-l-2 border-primary/20 hover:border-primary pl-md transition-all cursor-pointer">
+<p class="text-primary font-label-sm mb-xs">Physical Review Letters</p>
+<h4 class="font-headline-md text-on-surface group-hover:text-primary transition-colors">Observation of Fractional Hall Effects in Synthetic Lattices</h4>
+<p class="text-on-surface-variant text-sm mt-xs">M. Weiss, et al. | Breakthrough Experimental Data</p>
+</div>
+</div>
+</section>
+<!-- Startup & Industry -->
+<section class="space-y-md">
+<div class="flex items-center justify-between border-b border-white/5 pb-sm">
+<h2 class="font-headline-md text-headline-md">Industry Watch</h2>
+<span class="font-label-sm text-on-surface-variant">CAPITAL FLOW</span>
+</div>
+<div class="grid grid-cols-1 gap-md">
+<div class="glass-card p-md rounded-xl flex items-center justify-between group hover:border-primary/40 transition-colors">
+<div>
+<h4 class="font-headline-md text-on-surface">Algorithmiq Raises $15M</h4>
+<p class="text-on-surface-variant text-sm">Series A for drug discovery platform development.</p>
+</div>
+<div class="text-right">
+<span class="font-label-md text-primary">FUNDING</span>
+<p class="text-xs text-on-surface-variant mt-xs">2 days ago</p>
+</div>
+</div>
+<div class="glass-card p-md rounded-xl flex items-center justify-between group hover:border-primary/40 transition-colors">
+<div>
+<h4 class="font-headline-md text-on-surface">IQM &amp; NVIDIA Partnership</h4>
+<p class="text-on-surface-variant text-sm">Joint research on CUDA-Quantum integration.</p>
+</div>
+<div class="text-right">
+<span class="font-label-md text-secondary">PARTNER</span>
+<p class="text-xs text-on-surface-variant mt-xs">1 week ago</p>
+</div>
+</div>
+<div class="glass-card p-md rounded-xl flex items-center justify-between group hover:border-primary/40 transition-colors">
+<div>
+<h4 class="font-headline-md text-on-surface">Quantinuum 2.0 Roadmap</h4>
+<p class="text-on-surface-variant text-sm">Unveiling next-gen H-Series trapped-ion systems.</p>
+</div>
+<div class="text-right">
+<span class="font-label-md text-tertiary">STRATEGY</span>
+<p class="text-xs text-on-surface-variant mt-xs">3 days ago</p>
+</div>
+</div>
+</div>
+</section>
+</div>
+<!-- Opportunities & Events -->
+<div class="grid grid-cols-1 lg:grid-cols-12 gap-xl">
+<!-- Opportunities Board -->
+<div class="lg:col-span-7 space-y-md">
+<h2 class="font-headline-md text-headline-md border-b border-white/5 pb-sm">Opportunities Board</h2>
+<div class="space-y-sm">
+<div class="p-md hover:bg-surface-container-low transition-colors rounded-xl flex justify-between items-center group cursor-pointer border border-transparent hover:border-white/10">
+<div class="flex gap-md items-center">
+<div class="w-12 h-12 rounded bg-surface-container flex items-center justify-center font-bold text-primary">TQN</div>
+<div>
+<h5 class="font-headline-md text-on-surface text-base">Quantum Software Engineering Intern</h5>
+<p class="text-on-surface-variant text-sm">Qubit Technologies • Remote / India</p>
+</div>
+</div>
+<span class="font-label-sm text-primary group-hover:underline">APPLY NOW</span>
+</div>
+<div class="p-md hover:bg-surface-container-low transition-colors rounded-xl flex justify-between items-center group cursor-pointer border border-transparent hover:border-white/10">
+<div class="flex gap-md items-center">
+<div class="w-12 h-12 rounded bg-surface-container flex items-center justify-center font-bold text-secondary">GNT</div>
+<div>
+<h5 class="font-headline-md text-on-surface text-base">Post-Doctoral Fellowship: Photonics</h5>
+<p class="text-on-surface-variant text-sm">Ministry of Science &amp; Tech • Delhi</p>
+</div>
+</div>
+<span class="font-label-sm text-primary group-hover:underline">APPLY NOW</span>
+</div>
+<div class="p-md hover:bg-surface-container-low transition-colors rounded-xl flex justify-between items-center group cursor-pointer border border-transparent hover:border-white/10">
+<div class="flex gap-md items-center">
+<div class="w-12 h-12 rounded bg-surface-container flex items-center justify-center font-bold text-tertiary">DST</div>
+<div>
+<h5 class="font-headline-md text-on-surface text-base">Quantum Startup Launchpad Grant</h5>
+<p class="text-on-surface-variant text-sm">NQM • Up to ₹50 Lakhs Equity-Free</p>
+</div>
+</div>
+<span class="font-label-sm text-primary group-hover:underline">APPLY NOW</span>
+</div>
+</div>
+</div>
+<!-- Events Calendar -->
+<div class="lg:col-span-5 space-y-md">
+<h2 class="font-headline-md text-headline-md border-b border-white/5 pb-sm">Events Calendar</h2>
+<div class="glass-card rounded-2xl divide-y divide-white/5">
+<div class="p-md flex gap-md group cursor-pointer hover:bg-white/5 transition-colors">
+<div class="text-center min-w-[60px]">
+<p class="font-label-sm text-primary">JUNE</p>
+<p class="text-headline-md font-bold">12-14</p>
+</div>
+<div>
+<h5 class="font-headline-md text-base group-hover:text-primary transition-colors">Q-Nexus India 2024</h5>
+<p class="text-on-surface-variant text-sm">International Exhibition Center, Bangalore</p>
+</div>
+</div>
+<div class="p-md flex gap-md group cursor-pointer hover:bg-white/5 transition-colors">
+<div class="text-center min-w-[60px]">
+<p class="font-label-sm text-primary">JULY</p>
+<p class="text-headline-md font-bold">05</p>
+</div>
+<div>
+<h5 class="font-headline-md text-base group-hover:text-primary transition-colors">Workshop: Quantum Algorithms for Finance</h5>
+<p class="text-on-surface-variant text-sm">Virtual Session • Free Registration</p>
+</div>
+</div>
+<div class="p-md flex gap-md group cursor-pointer hover:bg-white/5 transition-colors">
+<div class="text-center min-w-[60px]">
+<p class="font-label-sm text-primary">SEPT</p>
+<p class="text-headline-md font-bold">20</p>
+</div>
+<div>
+<h5 class="font-headline-md text-base group-hover:text-primary transition-colors">The Quantum Global Summit</h5>
+<p class="text-on-surface-variant text-sm">New Delhi • Ministerial Keynote</p>
+</div>
+</div>
+</div>
+</div>
+</div>
+<!-- Newsletter Section -->
+<section class="py-xl">
+<div class="glass-card rounded-3xl p-xl flex flex-col md:flex-row items-center justify-between gap-xl relative overflow-hidden">
+<div class="absolute inset-0 bg-primary/5 shimmer opacity-20 pointer-events-none"></div>
+<div class="max-w-xl space-y-md relative z-10">
+<h2 class="font-display-lg text-headline-lg md:text-display-lg text-white">Stay Informed</h2>
+<p class="font-body-lg text-on-surface-variant">Join 24,000+ engineers, researchers, and policymakers receiving our weekly briefing on the quantum ecosystem.</p>
+</div>
+<div class="w-full md:w-auto relative z-10">
+<div class="flex flex-col sm:flex-row gap-sm bg-surface-container-low p-sm rounded-2xl border border-white/10">
+<input class="bg-transparent border-none focus:ring-0 text-on-surface px-md py-3 flex-grow min-w-[280px]" placeholder="Email address" type="email"/>
+<button class="bg-primary text-on-primary font-label-md px-xl py-3 rounded-xl hover:opacity-90 active:scale-95 transition-all">
+                            SUBSCRIBE
+                        </button>
+</div>
+<p class="text-xs text-on-surface-variant/60 mt-md">Weekly delivery. No spam. Unsubscribe anytime.</p>
+</div>
+</div>
+</section>
+</main>
+<!-- Footer -->
+<footer class="bg-surface-container-lowest border-t border-white/5 w-full py-xl mt-xl">
+<div class="max-w-container-max mx-auto px-md grid grid-cols-1 md:grid-cols-4 gap-lg">
+<div class="space-y-md">
+<span class="font-headline-md text-headline-md font-bold text-on-surface">The Quantum Network</span>
+<p class="text-on-surface-variant font-body-md">Pioneering the future of computation and bridging the gap between research and enterprise.</p>
+</div>
+<div class="space-y-md">
+<h4 class="font-label-md text-primary">RESOURCES</h4>
+<div class="flex flex-col gap-sm">
+<a class="text-on-surface-variant hover:text-primary transition-colors" href="#">Editorial Guidelines</a>
+<a class="text-on-surface-variant hover:text-primary transition-colors" href="#">Research Archives</a>
+<a class="text-on-surface-variant hover:text-primary transition-colors" href="#">Brand Assets</a>
+</div>
+</div>
+<div class="space-y-md">
+<h4 class="font-label-md text-primary">COMPANY</h4>
+<div class="flex flex-col gap-sm">
+<a class="text-on-surface-variant hover:text-primary transition-colors" href="#">Advertise</a>
+<a class="text-on-surface-variant hover:text-primary transition-colors" href="#">Contact</a>
+<a class="text-on-surface-variant hover:text-primary transition-colors" href="#">Careers</a>
+</div>
+</div>
+<div class="space-y-md">
+<h4 class="font-label-md text-primary">LEGAL</h4>
+<div class="flex flex-col gap-sm">
+<a class="text-on-surface-variant hover:text-primary transition-colors" href="#">Privacy Policy</a>
+<a class="text-on-surface-variant hover:text-primary transition-colors" href="#">Terms of Service</a>
+<a class="text-on-surface-variant hover:text-primary transition-colors" href="#">Cookie Policy</a>
+</div>
+</div>
+</div>
+<div class="max-w-container-max mx-auto px-md mt-xl pt-lg border-t border-white/5 flex flex-col md:flex-row justify-between items-center gap-md">
+<p class="text-on-surface-variant text-sm">© 2024 The Quantum Network. Pioneering the future of computation.</p>
+<div class="flex gap-md">
+<a class="text-on-surface-variant hover:text-primary" href="#"><span class="material-symbols-outlined">public</span></a>
+<a class="text-on-surface-variant hover:text-primary" href="#"><span class="material-symbols-outlined">alternate_email</span></a>
+<a class="text-on-surface-variant hover:text-primary" href="#"><span class="material-symbols-outlined">rss_feed</span></a>
+</div>
+</div>
+</footer>
+<script>
+        // Smooth reveal interactions
+        document.addEventListener('DOMContentLoaded', () => {
+            const cards = document.querySelectorAll('.glass-card');
+            const observer = new IntersectionObserver((entries) => {
+                entries.forEach(entry => {
+                    if (entry.isIntersecting) {
+                        entry.target.style.opacity = '1';
+                        entry.target.style.transform = 'translateY(0)';
+                    }
+                });
+            }, { threshold: 0.1 });
+
+            cards.forEach(card => {
+                card.style.opacity = '0';
+                card.style.transform = 'translateY(20px)';
+                card.style.transition = 'opacity 0.6s ease-out, transform 0.6s ease-out';
+                observer.observe(card);
+            });
+        });
+    </script>
+</body></html>
