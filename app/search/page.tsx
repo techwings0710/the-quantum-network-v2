@@ -52,6 +52,9 @@ export default async function SearchPage({
                 <p className="text-on-surface-variant text-sm line-clamp-3">
                   {article.summary}
                 </p>
+                <p className="font-label-sm text-label-sm text-on-surface-variant/70">
+                  {article.source_name}
+                </p>
               </Link>
             ))}
           </div>

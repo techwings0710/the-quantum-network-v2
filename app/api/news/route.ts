@@ -9,13 +9,14 @@ export async function GET(request: NextRequest) {
 
     if (query) {
       const results = await searchNews(query);
-      return NextResponse.json({ articles: results, query });
+      return NextResponse.json({ articles: results, query, count: results.length });
     }
 
     const articles = await getLatestNews(limit);
-    return NextResponse.json({ articles });
+    return NextResponse.json({ articles, count: articles.length });
   } catch (error) {
     const message = error instanceof Error ? error.message : "Failed to fetch news";
+    console.error("[news-api]", message);
     return NextResponse.json({ error: message }, { status: 500 });
   }
 }

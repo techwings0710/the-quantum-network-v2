@@ -6,17 +6,33 @@ import { IndiaQuantumPulse } from "@/components/IndiaQuantumPulse";
 import { ResearchIndustrySection } from "@/components/ResearchIndustrySection";
 import { OpportunitiesEventsSection } from "@/components/OpportunitiesEventsSection";
 import { NewsletterSection } from "@/components/NewsletterSection";
-import { getFeaturedNews, getLatestNews } from "@/lib/news/db";
+import { getFeaturedNews, getLatestNews, getResearchArticles, getIndustryArticles } from "@/lib/news/db";
+import { getOpportunities } from "@/lib/opportunities/db";
+import { getEvents } from "@/lib/events/db";
+import { getSubscriberCount } from "@/lib/newsletter/db";
 
 export default async function HomePage() {
-  const [featured, latestNews] = await Promise.all([
+  const [
+    featured,
+    latestNews,
+    researchArticles,
+    industryArticles,
+    opportunities,
+    events,
+    subscriberCount,
+  ] = await Promise.all([
     getFeaturedNews(),
-    getLatestNews(10),
+    getLatestNews(15),
+    getResearchArticles(6),
+    getIndustryArticles(6),
+    getOpportunities(),
+    getEvents(),
+    getSubscriberCount(),
   ]);
 
-  const nonFeatured = latestNews.filter((a) => !a.featured);
+  const nonFeatured = latestNews.filter((a) => a.id !== featured?.id);
   const secondaryStories = nonFeatured.slice(0, 3);
-  const latestArticles = nonFeatured.slice(0, 6);
+  const latestArticles = nonFeatured.slice(0, 12);
 
   return (
     <>
@@ -25,9 +41,15 @@ export default async function HomePage() {
         <HeroSection featured={featured} secondary={secondaryStories} />
         <LatestNews articles={latestArticles} />
         <IndiaQuantumPulse />
-        <ResearchIndustrySection />
-        <OpportunitiesEventsSection />
-        <NewsletterSection />
+        <ResearchIndustrySection
+          researchArticles={researchArticles}
+          industryArticles={industryArticles}
+        />
+        <OpportunitiesEventsSection
+          opportunities={opportunities}
+          events={events}
+        />
+        <NewsletterSection subscriberCount={subscriberCount} />
       </main>
       <Footer />
     </>

@@ -2,8 +2,9 @@
 
 import Link from "next/link";
 import { useRouter } from "next/navigation";
-import { useSession, signOut } from "next-auth/react";
+import { useSession } from "next-auth/react";
 import { FormEvent, useState } from "react";
+import { ProfileDropdown } from "@/components/ProfileDropdown";
 
 export function Header() {
   const { data: session } = useSession();
@@ -34,24 +35,24 @@ export function Header() {
             >
               News
             </Link>
-            <a
+            <Link
               className="font-body-md text-body-md text-on-surface-variant hover:text-on-surface transition-colors"
-              href="#"
+              href="/research"
             >
               Research
-            </a>
-            <a
+            </Link>
+            <Link
               className="font-body-md text-body-md text-on-surface-variant hover:text-on-surface transition-colors"
-              href="#"
+              href="/opportunities"
             >
               Opportunities
-            </a>
-            <a
+            </Link>
+            <Link
               className="font-body-md text-body-md text-on-surface-variant hover:text-on-surface transition-colors"
-              href="#"
+              href="/events"
             >
               Events
-            </a>
+            </Link>
             <a
               className="font-body-md text-body-md text-on-surface-variant hover:text-on-surface transition-colors"
               href="#"
@@ -77,21 +78,10 @@ export function Header() {
             />
           </form>
           {session?.user ? (
-            <div className="flex items-center gap-sm">
-              {session.user.image && (
-                <img
-                  src={session.user.image}
-                  alt={session.user.name ?? "User"}
-                  className="w-8 h-8 rounded-full"
-                />
-              )}
-              <button
-                onClick={() => signOut()}
-                className="bg-primary text-on-primary px-5 py-2 rounded-full font-label-md hover:opacity-80 transition-opacity active:scale-95 duration-200"
-              >
-                Sign Out
-              </button>
-            </div>
+            <ProfileDropdown
+              name={session.user.name}
+              image={session.user.image}
+            />
           ) : (
             <Link
               href="/auth/signin"

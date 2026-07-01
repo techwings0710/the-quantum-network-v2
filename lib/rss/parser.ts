@@ -7,6 +7,7 @@ export interface ParsedRssItem {
   content: string;
   pubDate: string | null;
   imageUrl: string | null;
+  author: string | null;
   source: string;
   feedId: string;
 }
@@ -72,6 +73,7 @@ export async function fetchFeedItems(
           content: content || item.title!.trim(),
           pubDate: item.pubDate ?? item.isoDate ?? null,
           imageUrl: extractImageUrl(itemRecord),
+          author: item.creator ?? (item as { author?: string }).author ?? null,
           source: feed.name,
           feedId: feed.id,
         };
