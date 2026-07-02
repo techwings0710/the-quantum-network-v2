@@ -53,12 +53,12 @@ export function Header() {
             >
               Events
             </Link>
-            <a
+            <Link
               className="font-body-md text-body-md text-on-surface-variant hover:text-on-surface transition-colors"
-              href="#"
+              href="/join-us"
             >
               Community
-            </a>
+            </Link>
           </div>
         </div>
         <div className="flex items-center gap-md">

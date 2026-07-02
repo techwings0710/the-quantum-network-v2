@@ -2,7 +2,15 @@
   "crons": [
     {
       "path": "/api/ingest-news",
-      "schedule": "0 0 * * *"
+      "schedule": "0 30 * * *"
+    },
+    {
+      "path": "/api/ingest-opportunities",
+      "schedule": "0 30 * * *"
+    },
+    {
+      "path": "/api/ingest-events",
+      "schedule": "0 30 * * *"
     }
   ]
 }

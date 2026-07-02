@@ -241,7 +241,7 @@ export default function SignInPage() {
                   Don&apos;t have an account?{" "}
                   <Link
                     className="text-primary font-semibold hover:underline underline-offset-4 decoration-primary/30 transition-all"
-                    href="#"
+                    href="/join-us"
                   >
                     Join the network
                   </Link>

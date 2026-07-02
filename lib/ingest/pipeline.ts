@@ -7,6 +7,10 @@ import {
   saveNewsArticle,
   updateFeaturedArticle,
 } from "../news/db";
+import {
+  scheduleArticleImageGeneration,
+  generateMissingNewsImages,
+} from "../images/generate";
 import type { IngestResult } from "../types";
 
 const MAX_ITEMS_PER_FEED = 4;
@@ -188,6 +192,17 @@ export async function ingestNewsFromRss(): Promise<IngestResult> {
           if (saved) {
             result.saved += 1;
             console.log(`[ingest] Saved: ${saved.title}`);
+
+            if (!item.imageUrl) {
+              scheduleArticleImageGeneration({
+                articleId: saved.id,
+                title: saved.title,
+                summary: saved.summary,
+                category: saved.category,
+                currentImageUrl: saved.image_url,
+                imageGenerated: saved.image_generated ?? false,
+              });
+            }
           } else {
             result.errors.push(`Failed to save article: ${item.title}`);
           }
@@ -217,7 +232,7 @@ export async function ingestNewsFromRss(): Promise<IngestResult> {
       result.errors.push(message);
     }
   }
-
+  await generateMissingNewsImages();
   result.processing_time_ms = Date.now() - startTime;
   result.success = result.errors.length === 0 || result.saved > 0;
 

@@ -34,6 +34,7 @@ function normalizeArticle(row: Record<string, unknown>): NewsArticle {
     source_url:
       (row.source_url as string) ?? (row.source as string) ?? "",
     india_relevance: Boolean(row.india_relevance),
+    image_generated: Boolean(row.image_generated),
     tags: (row.tags as string[]) ?? [],
   };
 }

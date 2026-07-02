@@ -1,37 +1,30 @@
 import { NextRequest, NextResponse } from "next/server";
 import { verifyCronAuth } from "@/lib/cron/auth";
 import { createSystemLog, finishSystemLog } from "@/lib/logs/db";
-import { ingestNewsFromRss } from "@/lib/ingest/pipeline";
+import { ingestOpportunitiesFromSources } from "@/lib/opportunities/ingest";
 
 async function runIngestion() {
   const startTime = Date.now();
-  console.log("[ingest-api] Starting news ingestion");
+  console.log("[opportunities-api] Starting opportunities ingestion");
 
   const logId = await createSystemLog({
-    job_type: "news_ingest",
+    job_type: "opportunities_ingest",
     status: "started",
-    message: "News ingestion started",
+    message: "Opportunities ingestion started",
   });
 
-  const result = await ingestNewsFromRss();
+  const result = await ingestOpportunitiesFromSources();
   const processingTime = Date.now() - startTime;
 
   console.log(
-    `[ingest-api] Finished: ${result.saved} saved, ${result.duplicates} duplicates, ${processingTime}ms`,
+    `[opportunities-api] Finished: ${result.saved} saved, ${result.deactivated} deactivated, ${processingTime}ms`,
   );
 
   if (logId) {
     await finishSystemLog(logId, {
       status: result.success ? "completed" : "partial",
-      message: `Saved ${result.saved}, duplicates ${result.duplicates}`,
-      metadata: {
-        feeds_processed: result.feeds_processed,
-        feeds_failed: result.feeds_failed,
-        saved: result.saved,
-        duplicates: result.duplicates,
-        skipped: result.skipped,
-        errors: result.errors,
-      },
+      message: `Saved ${result.saved}, deactivated ${result.deactivated}`,
+      metadata: { ...result },
       processing_time_ms: processingTime,
     });
   }
@@ -49,12 +42,9 @@ export async function POST(request: NextRequest) {
     return runIngestion();
   } catch (error) {
     const message =
-      error instanceof Error ? error.message : "Ingestion pipeline failed";
-    console.error("[ingest-api] POST failed:", message);
-    return NextResponse.json(
-      { success: false, error: message },
-      { status: 500 },
-    );
+      error instanceof Error ? error.message : "Opportunities ingestion failed";
+    console.error("[opportunities-api] POST failed:", message);
+    return NextResponse.json({ success: false, error: message }, { status: 500 });
   }
 }
 
@@ -66,11 +56,8 @@ export async function GET(request: NextRequest) {
     return runIngestion();
   } catch (error) {
     const message =
-      error instanceof Error ? error.message : "Ingestion pipeline failed";
-    console.error("[ingest-api] GET failed:", message);
-    return NextResponse.json(
-      { success: false, error: message },
-      { status: 500 },
-    );
+      error instanceof Error ? error.message : "Opportunities ingestion failed";
+    console.error("[opportunities-api] GET failed:", message);
+    return NextResponse.json({ success: false, error: message }, { status: 500 });
   }
 }

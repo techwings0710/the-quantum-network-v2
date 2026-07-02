@@ -13,6 +13,7 @@ import {
 } from "@/lib/news/db";
 import { estimateReadingTime } from "@/lib/utils";
 import { auth } from "@/lib/auth";
+import { ReadingHistoryTracker } from "@/components/ReadingHistoryTracker";
 
 interface ArticlePageProps {
   params: Promise<{ slug: string }>;
@@ -57,6 +58,7 @@ export default async function ArticlePage({ params }: ArticlePageProps) {
 
   return (
     <>
+      <ReadingHistoryTracker articleId={article.id} userId={session?.user?.id} />
       <Header />
       <main className="mt-16 pt-xl px-md max-w-container-max mx-auto space-y-xl">
         <article className="max-w-3xl mx-auto space-y-lg">
