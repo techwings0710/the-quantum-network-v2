@@ -2,6 +2,7 @@ import { GoogleGenerativeAI } from "@google/generative-ai";
 import type { GeminiRewriteResult } from "./types";
 
 const apiKey = process.env.GEMINI_API_KEY ?? "";
+console.log("Gemini key:", apiKey);
 const GEMINI_TIMEOUT_MS = 45000;
 
 const REWRITE_PROMPT = `You are a professional editorial journalist for The Quantum Network, India's leading quantum technology news platform.

@@ -1,6 +1,5 @@
-import { rewriteArticleWithGemini, isGeminiConfigured } from "../gemini";
 import { getEnabledFeeds } from "../rss/feeds";
-import { fetchFeedItems } from "../rss/parser";
+import { fetchFeedItems, type ParsedRssItem } from "../rss/parser";
 import {
   articleExistsBySourceUrl,
   ensureUniqueSlug,
@@ -10,7 +9,116 @@ import {
 } from "../news/db";
 import type { IngestResult } from "../types";
 
-const MAX_ITEMS_PER_FEED = 2;
+const MAX_ITEMS_PER_FEED = 4;
+
+function generateLocalSlug(title: string): string {
+  return title
+    .toLowerCase()
+    .replace(/[^a-z0-9]+/g, "-")
+    .replace(/^-|-$/g, "")
+    .substring(0, 100);
+}
+
+function getSummaryFromContent(content: string): string {
+  if (!content) return "";
+  const paragraphs = content.split(/\n\n+/);
+  const summaryParagraphs = paragraphs.slice(0, 2).map(p => p.trim()).filter(Boolean);
+  const summary = summaryParagraphs.join("\n\n");
+  if (summary.length > 500) {
+    return summary.substring(0, 497).trim() + "...";
+  }
+  return summary || content.substring(0, 300) + "...";
+}
+
+function getSeoDescription(summary: string): string {
+  const clean = summary.replace(/\n+/g, " ").trim();
+  if (clean.length <= 160) return clean;
+  return clean.substring(0, 157).trim() + "...";
+}
+
+function extractTags(title: string, content: string, rssCategories: string[]): string[] {
+  const textToScan = `${title} ${content}`.toLowerCase();
+  const tagSet = new Set<string>();
+
+  // Add RSS categories first
+  rssCategories.forEach(cat => {
+    if (cat.length > 1 && cat.length < 20) {
+      tagSet.add(cat.toUpperCase());
+    }
+  });
+
+  // Keyword mapping rules
+  const keywordRules: Record<string, string[]> = {
+    "superconducting": ["SUPERCONDUCTING", "HARDWARE"],
+    "qubit": ["QUBITS", "HARDWARE"],
+    "photon": ["PHOTONICS", "HARDWARE"],
+    "silicon": ["SILICON", "HARDWARE"],
+    "ion trap": ["ION-TRAP", "HARDWARE"],
+    "trapped ion": ["ION-TRAP", "HARDWARE"],
+    "topological": ["TOPOLOGICAL", "HARDWARE"],
+    "error correction": ["ERROR-CORRECTION", "RESEARCH"],
+    "fault tolerant": ["ERROR-CORRECTION", "RESEARCH"],
+    "quantum key": ["QKD", "SECURITY", "COMMUNICATION"],
+    "qkd": ["QKD", "SECURITY", "COMMUNICATION"],
+    "cryptography": ["CRYPTOGRAPHY", "SECURITY"],
+    "encryption": ["CRYPTOGRAPHY", "SECURITY"],
+    "algorithm": ["ALGORITHMS", "SOFTWARE"],
+    "software": ["SOFTWARE"],
+    "simulat": ["SIMULATION", "SOFTWARE"],
+    "machine learning": ["ML", "SOFTWARE"],
+    "qiskit": ["QISKIT", "SOFTWARE"],
+    "national quantum mission": ["NQM", "POLICY", "INDIA"],
+    "nqm": ["NQM", "POLICY", "INDIA"],
+    "dst": ["DST", "POLICY", "INDIA"],
+    "funding": ["VENTURE", "INVESTMENT"],
+    "investment": ["VENTURE", "INVESTMENT"],
+    "startup": ["STARTUP", "ECOSYSTEM"],
+    "spinout": ["STARTUP", "ECOSYSTEM"],
+    "merger": ["MERGER", "ECOSYSTEM"],
+    "acquisition": ["ACQUISITION", "ECOSYSTEM"],
+  };
+
+  for (const [keyword, tags] of Object.entries(keywordRules)) {
+    if (textToScan.includes(keyword)) {
+      tags.forEach(t => tagSet.add(t));
+    }
+  }
+
+  // Default tags if none found
+  if (tagSet.size === 0) {
+    tagSet.add("QUANTUM");
+  }
+
+  return Array.from(tagSet);
+}
+
+function detectIndiaRelevance(title: string, content: string, feedCategory?: string): boolean {
+  if (feedCategory === "INDIA") return true;
+  const text = `${title} ${content}`.toLowerCase();
+  const indiaKeywords = [
+    "india",
+    "indian",
+    "bangalore",
+    "bengaluru",
+    "delhi",
+    "mumbai",
+    "chennai",
+    "pune",
+    "kolkata",
+    "iisc",
+    "iit",
+    "tifr",
+    "nqm",
+    "national quantum mission",
+    "dst india",
+    "qnulabs",
+    "qnu labs",
+    "qpiai",
+    "bosonq psi",
+    "bosonqpsi"
+  ];
+  return indiaKeywords.some(keyword => text.includes(keyword));
+}
 
 export async function ingestNewsFromRss(): Promise<IngestResult> {
   const startTime = Date.now();
@@ -26,15 +134,8 @@ export async function ingestNewsFromRss(): Promise<IngestResult> {
     processing_time_ms: 0,
   };
 
-  if (!isGeminiConfigured()) {
-    result.success = false;
-    result.errors.push("GEMINI_API_KEY is not configured");
-    result.processing_time_ms = Date.now() - startTime;
-    return result;
-  }
-
   const feeds = getEnabledFeeds();
-  console.log(`[ingest] Starting ingestion for ${feeds.length} feeds`);
+  console.log(`[ingest] Starting ingestion for ${feeds.length} feeds (Bypassing Gemini completely)`);
 
   for (const feed of feeds) {
     try {
@@ -54,30 +155,32 @@ export async function ingestNewsFromRss(): Promise<IngestResult> {
             continue;
           }
 
-          const rewritten = await rewriteArticleWithGemini({
-            title: item.title,
-            content: item.content,
-            source: feed.name,
-          });
+          // Local metadata derivation
+          const category = feed.category || "RESEARCH";
+          const summary = getSummaryFromContent(item.content);
+          const seoDescription = getSeoDescription(summary);
+          const tags = extractTags(item.title, item.content, item.categories);
+          const indiaRelevance = detectIndiaRelevance(item.title, item.content, feed.category);
 
-          const slug = await ensureUniqueSlug(rewritten.slug);
+          const baseSlug = generateLocalSlug(item.title);
+          const slug = await ensureUniqueSlug(baseSlug);
           const publishedAt = item.pubDate
             ? new Date(item.pubDate).toISOString()
             : new Date().toISOString();
 
           const saved = await saveNewsArticle({
             slug,
-            title: rewritten.title,
-            summary: rewritten.summary,
-            content: rewritten.rewritten_article,
-            category: rewritten.category,
-            tags: rewritten.tags,
-            india_relevance: rewritten.india_relevance,
-            seo_description: rewritten.seo_description,
+            title: item.title,
+            summary: summary,
+            content: item.content,
+            category: category,
+            tags: tags,
+            india_relevance: indiaRelevance,
+            seo_description: seoDescription,
             image_url: item.imageUrl ?? getDefaultImageUrl(),
             source_name: feed.name,
             source_url: item.link,
-            author: item.author ?? null,
+            author: item.author ?? feed.name,
             published_at: publishedAt,
             featured: false,
           });

@@ -115,43 +115,50 @@ export async function getNewsBySlug(slug: string): Promise<NewsArticle | null> {
   return data ? normalizeArticle(data) : null;
 }
 
+const cachedSearchNews = unstable_cache(
+  async (term: string): Promise<NewsArticle[]> => {
+    if (!isSupabaseConfigured() || !term) return [];
+
+    const supabase = getSupabaseClient();
+    if (!supabase) return [];
+
+    const { data, error } = await supabase
+      .from("news")
+      .select("*")
+      .or(
+        `title.ilike.%${term}%,summary.ilike.%${term}%,content.ilike.%${term}%,category.ilike.%${term}%`,
+      )
+      .order("published_at", { ascending: false })
+      .limit(30);
+
+    if (error) {
+      console.error("Failed to search news:", error.message);
+      return [];
+    }
+
+    const articles = (data ?? []).map(normalizeArticle);
+
+    const tagMatches = articles.filter((article) =>
+      article.tags.some((tag) => tag.toLowerCase().includes(term.toLowerCase())),
+    );
+
+    const combined = [...articles];
+    for (const match of tagMatches) {
+      if (!combined.find((a) => a.id === match.id)) {
+        combined.push(match);
+      }
+    }
+
+    return combined;
+  },
+  ["search-news"],
+  { revalidate: 60 }
+);
+
 export async function searchNews(query: string): Promise<NewsArticle[]> {
-  if (!isSupabaseConfigured() || !query.trim()) return [];
-
-  const supabase = getSupabaseClient();
-  if (!supabase) return [];
-
   const term = sanitizeSearchTerm(query);
   if (!term) return [];
-
-  const { data, error } = await supabase
-    .from("news")
-    .select("*")
-    .or(
-      `title.ilike.%${term}%,summary.ilike.%${term}%,content.ilike.%${term}%,category.ilike.%${term}%`,
-    )
-    .order("published_at", { ascending: false })
-    .limit(30);
-
-  if (error) {
-    console.error("Failed to search news:", error.message);
-    return [];
-  }
-
-  const articles = (data ?? []).map(normalizeArticle);
-
-  const tagMatches = articles.filter((article) =>
-    article.tags.some((tag) => tag.toLowerCase().includes(term.toLowerCase())),
-  );
-
-  const combined = [...articles];
-  for (const match of tagMatches) {
-    if (!combined.find((a) => a.id === match.id)) {
-      combined.push(match);
-    }
-  }
-
-  return combined;
+  return cachedSearchNews(term);
 }
 
 export async function getResearchArticles(limit = 20): Promise<NewsArticle[]> {
@@ -363,4 +370,82 @@ export function isResearchArticle(article: NewsArticle): boolean {
     article.category === "RESEARCH" ||
     article.tags.some((tag) => RESEARCH_TAGS.includes(tag.toUpperCase()))
   );
+}
+
+export async function isArticleSaved(userEmail: string, articleId: string): Promise<boolean> {
+  if (!isSupabaseConfigured()) return false;
+  const supabase = getSupabaseServiceClient();
+  if (!supabase) return false;
+
+  const { data, error } = await supabase
+    .from("saved_articles")
+    .select("id")
+    .eq("user_email", userEmail)
+    .eq("article_id", articleId)
+    .maybeSingle();
+
+  if (error) {
+    console.error("Failed to check if article is saved:", error.message);
+    return false;
+  }
+
+  return !!data;
+}
+
+export async function saveArticle(userEmail: string, articleId: string): Promise<boolean> {
+  if (!isSupabaseConfigured()) return false;
+  const supabase = getSupabaseServiceClient();
+  if (!supabase) return false;
+
+  const { error } = await supabase
+    .from("saved_articles")
+    .upsert({ user_email: userEmail, article_id: articleId }, { onConflict: "user_email,article_id" });
+
+  if (error) {
+    console.error("Failed to save article:", error.message);
+    return false;
+  }
+
+  return true;
+}
+
+export async function unsaveArticle(userEmail: string, articleId: string): Promise<boolean> {
+  if (!isSupabaseConfigured()) return false;
+  const supabase = getSupabaseServiceClient();
+  if (!supabase) return false;
+
+  const { error } = await supabase
+    .from("saved_articles")
+    .delete()
+    .eq("user_email", userEmail)
+    .eq("article_id", articleId);
+
+  if (error) {
+    console.error("Failed to unsave article:", error.message);
+    return false;
+  }
+
+  return true;
+}
+
+export async function getSavedArticles(userEmail: string): Promise<NewsArticle[]> {
+  if (!isSupabaseConfigured()) return [];
+  const supabase = getSupabaseServiceClient();
+  if (!supabase) return [];
+
+  const { data, error } = await supabase
+    .from("saved_articles")
+    .select("article_id, news (*)")
+    .eq("user_email", userEmail)
+    .order("saved_at", { ascending: false });
+
+  if (error) {
+    console.error("Failed to fetch saved articles:", error.message);
+    return [];
+  }
+
+  return (data ?? [])
+    .map((row: any) => row.news)
+    .filter(Boolean)
+    .map(normalizeArticle);
 }

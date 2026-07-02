@@ -4,12 +4,15 @@ import type { Metadata } from "next";
 import { Header } from "@/components/Header";
 import { Footer } from "@/components/Footer";
 import { ShareButtons } from "@/components/ShareButtons";
+import { SaveButton } from "@/components/SaveButton";
 import {
   getNewsBySlug,
   getRelatedArticles,
   formatArticleDate,
+  isArticleSaved,
 } from "@/lib/news/db";
 import { estimateReadingTime } from "@/lib/utils";
+import { auth } from "@/lib/auth";
 
 interface ArticlePageProps {
   params: Promise<{ slug: string }>;
@@ -39,6 +42,11 @@ export default async function ArticlePage({ params }: ArticlePageProps) {
     notFound();
   }
 
+  const session = await auth();
+  const isSaved = session?.user?.email
+    ? await isArticleSaved(session.user.email, article.id)
+    : false;
+
   const [relatedArticles] = await Promise.all([
     getRelatedArticles(article, 3),
   ]);
@@ -60,16 +68,23 @@ export default async function ArticlePage({ params }: ArticlePageProps) {
             BACK TO NEWS
           </Link>
 
-          <div className="flex flex-wrap items-center gap-sm">
-            <span className="font-label-sm text-label-sm bg-primary-container text-on-primary-container px-3 py-1 rounded-full">
-              {article.category}
-            </span>
-            <span className="text-on-surface-variant text-xs">
-              • {formatArticleDate(article.published_at)}
-            </span>
-            <span className="text-on-surface-variant text-xs">
-              • {readingTime} min read
-            </span>
+          <div className="flex flex-wrap items-center justify-between gap-sm border-b border-white/5 pb-md">
+            <div className="flex flex-wrap items-center gap-sm">
+              <span className="font-label-sm text-label-sm bg-primary-container text-on-primary-container px-3 py-1 rounded-full">
+                {article.category}
+              </span>
+              <span className="text-on-surface-variant text-xs">
+                • {formatArticleDate(article.published_at)}
+              </span>
+              <span className="text-on-surface-variant text-xs">
+                • {readingTime} min read
+              </span>
+            </div>
+            <SaveButton
+              articleId={article.id}
+              initialSaved={isSaved}
+              authenticated={!!session?.user}
+            />
           </div>
 
           <h1 className="font-headline-lg text-headline-lg text-on-surface leading-tight">
