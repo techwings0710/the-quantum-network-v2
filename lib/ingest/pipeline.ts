@@ -240,5 +240,5 @@ export async function ingestNewsFromRss(): Promise<IngestResult> {
     `[ingest] Complete: ${result.saved} saved, ${result.duplicates} duplicates, ${result.feeds_failed} feeds failed, ${result.processing_time_ms}ms`,
   );
 
-  return result;
+  return result; 
 }
