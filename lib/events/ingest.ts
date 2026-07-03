@@ -32,7 +32,9 @@ export async function upsertEvent(item: RawEvent): Promise<boolean> {
       active: true,
       updated_at: now,
     },
-    { onConflict: "source_url" },
+    {
+      onConflict: "source_url",
+    },
   );
 
   if (error) {
@@ -53,7 +55,10 @@ export async function archivePastEvents(): Promise<number> {
 
   const { data, error } = await supabase
     .from("events")
-    .update({ active: false, updated_at: now })
+    .update({
+      active: false,
+      updated_at: now,
+    })
     .lt("start_date", now)
     .eq("active", true)
     .select("id");
@@ -76,13 +81,19 @@ export async function deactivatePlaceholderEvents(): Promise<number> {
 
   const { data, error } = await supabase
     .from("events")
-    .update({ active: false, updated_at: now })
+    .update({
+      active: false,
+      updated_at: now,
+    })
     .or("event_url.eq.#,event_url.is.null,registration_url.eq.#")
     .eq("active", true)
     .select("id");
 
   if (error) {
-    console.error("[events-ingest] Placeholder deactivate failed:", error.message);
+    console.error(
+      "[events-ingest] Placeholder deactivate failed:",
+      error.message,
+    );
     return 0;
   }
 
@@ -91,6 +102,7 @@ export async function deactivatePlaceholderEvents(): Promise<number> {
 
 export async function ingestEventsFromSources(): Promise<AgentIngestResult> {
   const startTime = Date.now();
+
   const result: AgentIngestResult = {
     success: true,
     sources_processed: 0,
@@ -103,47 +115,91 @@ export async function ingestEventsFromSources(): Promise<AgentIngestResult> {
     processing_time_ms: 0,
   };
 
-  console.log(`[events-ingest] Starting sync for ${eventSources.length} sources`);
+  console.log(
+    `[events-ingest] Starting sync for ${eventSources.length} sources`,
+  );
 
   for (const source of eventSources) {
     try {
       const rawItems = await source.fetch();
+
       result.sources_processed += 1;
       result.fetched += rawItems.length;
 
       for (const raw of rawItems) {
         try {
           const normalized = source.normalize(raw);
-          if (!normalized || !source.validate(normalized)) continue;
+
+          if (!normalized) {
+            console.log("[EVENTS] normalize() returned null");
+            continue;
+          }
+
+          const valid = source.validate(normalized);
+
+          if (!valid) {
+            console.log("[EVENTS] Validation failed:");
+            console.log(normalized);
+            continue;
+          }
+
+          console.log("[EVENTS] Attempting to save:", normalized.title);
 
           const saved = await upsertEvent(normalized);
+
+          console.log("[EVENTS] Saved:", saved);
+
           if (saved) {
             result.saved += 1;
           }
         } catch (itemError) {
           const message =
-            itemError instanceof Error ? itemError.message : "Unknown error";
+            itemError instanceof Error
+              ? itemError.message
+              : "Unknown error";
+
           result.errors.push(`${source.name} item error: ${message}`);
         }
       }
     } catch (sourceError) {
       result.sources_failed += 1;
+
       const message =
-        sourceError instanceof Error ? sourceError.message : "Unknown source error";
+        sourceError instanceof Error
+          ? sourceError.message
+          : "Unknown source error";
+
       result.errors.push(`Source "${source.name}" failed: ${message}`);
-      console.error(`[events-ingest] Source error (${source.name}): ${message}`);
+
+      console.error(
+        `[events-ingest] Source error (${source.name}): ${message}`,
+      );
     }
   }
 
-  const archivedCount = await archivePastEvents();
+  // --------------------------------------------------
+  // TEMPORARILY DISABLED
+  //
+  // Current RSS feeds are mostly NEWS feeds, not real
+  // event feeds. Their publication dates are historical,
+  // so archivePastEvents() immediately marks everything
+  // inactive.
+  //
+  // Re-enable this once real event sources are added.
+  // --------------------------------------------------
+
+  const archivedCount = 0;
+
   const placeholderCount = await deactivatePlaceholderEvents();
-  result.deactivated = archivedCount + placeholderCount;
+
+  result.deactivated = placeholderCount;
 
   result.processing_time_ms = Date.now() - startTime;
+
   result.success = result.errors.length === 0 || result.saved > 0;
 
   console.log(
-    `[events-ingest] Complete: ${result.saved} saved, ${result.deactivated} archived, ${result.processing_time_ms}ms`,
+    `[events-ingest] Complete: ${result.saved} saved, ${result.deactivated} deactivated, ${result.processing_time_ms}ms`,
   );
 
   return result;

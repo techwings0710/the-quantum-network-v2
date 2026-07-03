@@ -19,6 +19,7 @@ export async function upsertOpportunity(item: RawOpportunity): Promise<boolean> 
   const now = new Date().toISOString();
   const initials = getInitials(item.organization);
 
+  console.log("[UPSERT]", item);
   const { error } = await supabase.from("opportunities").upsert(
     {
       title: item.title,
@@ -116,15 +117,34 @@ export async function ingestOpportunitiesFromSources(): Promise<AgentIngestResul
   for (const source of opportunitySources) {
     try {
       const rawItems = await source.fetch();
+      console.log(
+        `[${source.name}] fetched ${rawItems.length} opportunities`
+      );
       result.sources_processed += 1;
       result.fetched += rawItems.length;
 
       for (const raw of rawItems) {
         try {
           const normalized = source.normalize(raw);
-          if (!normalized || !source.validate(normalized)) continue;
+          console.log(normalized);
+          if (!normalized) {
+            console.log("[SKIPPED] normalize() returned null");
+            continue;
+          }
+          
+          const valid = source.validate(normalized);
+          
+          if (!valid) {
+            console.log("[INVALID]", normalized);
+            continue;
+          }
 
           const saved = await upsertOpportunity(normalized);
+          console.log(
+            `[${source.name}] saved:`,
+            saved,
+            normalized.title
+          );
           if (saved) {
             result.saved += 1;
           }

@@ -28,11 +28,9 @@ async function fetchEvents(type?: string): Promise<Event[]> {
   return (data ?? []) as Event[];
 }
 
-export const getEvents = unstable_cache(
-  fetchEvents,
-  ["events"],
-  { revalidate: 600, tags: ["events"] },
-);
+export async function getEvents(type?: string): Promise<Event[]> {
+  return fetchEvents(type);
+}
 
 export async function getEventsByType(type: string): Promise<Event[]> {
   return fetchEvents(type);

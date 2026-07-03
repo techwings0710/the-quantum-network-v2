@@ -30,9 +30,6 @@ export function createRssEventAdapter(
     normalize(raw): RawEvent | null {
       const description = stripHtml(raw.content);
       const eventDate = raw.pubDate ?? new Date().toISOString();
-
-      if (!isFutureDate(eventDate)) return null;
-
       return {
         title: raw.title,
         description: description.slice(0, 2000) || null,

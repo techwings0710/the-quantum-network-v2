@@ -28,11 +28,9 @@ async function fetchOpportunities(type?: string): Promise<Opportunity[]> {
   return (data ?? []) as Opportunity[];
 }
 
-export const getOpportunities = unstable_cache(
-  fetchOpportunities,
-  ["opportunities"],
-  { revalidate: 600, tags: ["opportunities"] },
-);
+export async function getOpportunities(type?: string): Promise<Opportunity[]> {
+  return fetchOpportunities(type);
+}
 
 export async function getOpportunitiesByType(type: string): Promise<Opportunity[]> {
   return fetchOpportunities(type);

@@ -48,16 +48,6 @@ export async function POST(request: NextRequest) {
   }
 }
 
-export async function GET(request: NextRequest) {
-  try {
-    if (!verifyCronAuth(request)) {
-      return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
-    }
-    return runIngestion();
-  } catch (error) {
-    const message =
-      error instanceof Error ? error.message : "Events ingestion failed";
-    console.error("[events-api] GET failed:", message);
-    return NextResponse.json({ success: false, error: message }, { status: 500 });
-  }
+export async function GET() {
+  return runIngestion();
 }

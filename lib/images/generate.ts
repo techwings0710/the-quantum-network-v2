@@ -1,10 +1,11 @@
 import { GoogleGenerativeAI } from "@google/generative-ai";
 import { getSupabaseServiceClient, isSupabaseConfigured } from "../supabase";
 import { getDefaultImageUrl } from "../news/db";
+const POLLINATIONS_URL = "https://image.pollinations.ai/prompt/";
 
 const apiKey = process.env.GEMINI_API_KEY ?? "";
 const IMAGE_TIMEOUT_MS = 60000;
-const IMAGE_MODEL = "gemini-2.0-flash-preview-image-generation";
+const IMAGE_MODEL = "gemini-3.1-flash-lite-image";
 
 const IMAGE_STYLE =
   "Editorial, professional, scientific, dark blue, minimal, modern, technology magazine style";
