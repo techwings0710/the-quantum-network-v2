@@ -9,10 +9,11 @@ async function fetchEvents(type?: string): Promise<Event[]> {
   if (!supabase) return [];
 
   let query = supabase
-    .from("events")
-    .select("*")
-    .eq("active", true)
-    .order("start_date", { ascending: true });
+  .from("events")
+  .select("*")
+  .eq("active", true)
+  .gte("start_date", new Date().toISOString())
+  .order("start_date", { ascending: true });
 
   if (type) {
     query = query.eq("type", type);

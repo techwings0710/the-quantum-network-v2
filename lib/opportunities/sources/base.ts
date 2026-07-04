@@ -1,12 +1,27 @@
 import type { RawOpportunity } from "../../types";
 
 export function getInitials(name: string): string {
-  return name
+  if (!name) return "QN";
+
+  const words = name
+    .trim()
     .split(/\s+/)
-    .slice(0, 3)
-    .map((word) => word[0]?.toUpperCase() ?? "")
-    .join("")
-    .slice(0, 3);
+    .filter(Boolean);
+
+  // Multiple words → IBM Quantum = IQ
+  if (words.length > 1) {
+    return words
+      .map(word => word[0])
+      .join("")
+      .slice(0, 2)
+      .toUpperCase();
+  }
+
+  // Single word → PsiQuantum = PS
+  return words[0]
+    .replace(/[^A-Za-z]/g, "")
+    .slice(0, 2)
+    .toUpperCase();
 }
 
 export function inferOpportunityType(title: string, description: string): string {

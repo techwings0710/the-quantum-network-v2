@@ -42,49 +42,55 @@ export function NewsletterSection({ subscriberCount = 0 }: NewsletterSectionProp
   }
 
   return (
-    <section className="py-xl">
-      <div className="glass-card rounded-3xl p-xl flex flex-col md:flex-row items-center justify-between gap-xl relative overflow-hidden">
+    <section className="py-16">
+      <div className="glass-card rounded-3xl px-8 py-10 md:px-12 md:py-12 relative overflow-hidden">
         <div className="absolute inset-0 bg-primary/5 shimmer opacity-20 pointer-events-none" />
-        <div className="max-w-xl space-y-md relative z-10">
+  
+        <div className="relative z-10 max-w-3xl mx-auto text-center">
           <h2 className="font-display-lg text-headline-lg md:text-display-lg text-white">
             Stay Informed
           </h2>
-          <p className="font-body-lg text-on-surface-variant">
-            Join {countLabel} engineers, researchers, and policymakers receiving
-            our weekly briefing on the quantum ecosystem.
+  
+          <p className="font-body-lg text-on-surface-variant mt-4 max-w-2xl mx-auto">
+            Join <span className="text-primary font-semibold">{countLabel}</span>{" "}
+            engineers, researchers, founders and policymakers receiving our weekly
+            briefing on quantum computing, research breakthroughs, events and
+            career opportunities.
           </p>
-        </div>
-        <div className="w-full md:w-auto relative z-10">
+  
           <form
             onSubmit={handleSubmit}
-            className="flex flex-col sm:flex-row gap-sm bg-surface-container-low p-sm rounded-2xl border border-white/10"
+            className="mt-8 flex flex-col sm:flex-row gap-3 max-w-2xl mx-auto"
           >
             <input
-              className="bg-transparent border-none focus:ring-0 text-on-surface px-md py-3 flex-grow min-w-[280px]"
-              placeholder="Email address"
+              className="flex-1 bg-surface-container-low border border-white/10 rounded-xl px-5 py-4 text-on-surface placeholder:text-on-surface-variant/60 focus:outline-none focus:border-primary transition-colors"
+              placeholder="Enter your email address"
               type="email"
               value={email}
               onChange={(e) => setEmail(e.target.value)}
               required
             />
+  
             <button
               type="submit"
               disabled={isLoading}
-              className="bg-primary text-on-primary font-label-md px-xl py-3 rounded-xl hover:opacity-90 active:scale-95 transition-all disabled:opacity-50"
+              className="bg-primary text-on-primary font-semibold px-8 py-4 rounded-xl hover:opacity-90 active:scale-95 transition-all disabled:opacity-50 whitespace-nowrap"
             >
               {isLoading ? "SUBSCRIBING..." : "SUBSCRIBE"}
             </button>
           </form>
-          {message && (
+  
+          {message ? (
             <p
-              className={`text-xs mt-md ${isSuccess ? "text-primary" : "text-error"}`}
+              className={`text-sm mt-5 ${
+                isSuccess ? "text-primary" : "text-error"
+              }`}
             >
               {message}
             </p>
-          )}
-          {!message && (
-            <p className="text-xs text-on-surface-variant/60 mt-md">
-              Weekly delivery. No spam. Unsubscribe anytime.
+          ) : (
+            <p className="text-sm text-on-surface-variant/60 mt-5">
+              Weekly delivery • No spam • Unsubscribe anytime
             </p>
           )}
         </div>

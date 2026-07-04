@@ -25,15 +25,17 @@ function generateLocalSlug(title: string): string {
 
 function getSummaryFromContent(content: string): string {
   if (!content) return "";
-  const paragraphs = content.split(/\n\n+/);
-  const summaryParagraphs = paragraphs.slice(0, 2).map(p => p.trim()).filter(Boolean);
-  const summary = summaryParagraphs.join("\n\n");
-  if (summary.length > 500) {
-    return summary.substring(0, 497).trim() + "...";
-  }
-  return summary || content.substring(0, 300) + "...";
-}
 
+  const clean = content
+    .replace(/\n+/g, "\n")
+    .trim();
+
+  if (clean.length <= 2500) {
+    return clean;
+  }
+
+  return clean.substring(0, 2497).trim() + "...";
+}
 function getSeoDescription(summary: string): string {
   const clean = summary.replace(/\n+/g, " ").trim();
   if (clean.length <= 160) return clean;
@@ -242,3 +244,5 @@ export async function ingestNewsFromRss(): Promise<IngestResult> {
 
   return result; 
 }
+
+
